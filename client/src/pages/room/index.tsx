@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { Container, Bar, VideoContainer } from './styles';
 
+import { useSocket } from 'context/socket';
 import Controls from 'components/Controls';
 
 const Room: React.FC = () => {
+  const { connect } = useSocket();
   const { roomName } = useParams<{ roomName: string }>();
+
+  useEffect(() => {
+    connect();
+  }, [connect]);
 
   return (
     <Container>
