@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import fs from 'fs';
-import { createServer as createHttpsServer, Server as ServerHttps } from 'https';
+import socket from './ws';
+import { createServer as createHttpsServer, Server as ServerHttps, globalAgent } from 'https';
 import { createServer as createHttpServer, Server as ServerHttp } from 'http';
 import cors from 'cors';
 import socketio from 'socket.io';
@@ -26,6 +27,7 @@ class App {
   }
 
   public start() {
+    globalAgent.options.rejectUnauthorized = false;
     this.https = createHttpsServer({ key: key, cert: cert }, this.app);
     this.https.listen(process.env.SSLPORT || 3334, () => {
       console.log(`https server running on :${process.env.SSLPORT || 3334}`)
@@ -36,9 +38,9 @@ class App {
       console.log(`http server running on :${process.env.PORT || 3333}`)
     });
 
-    const io = socketio(this.http);
+    // const io = socketio(this.http);
     const ios = socketio(this.https);
-    // setup socket
+    socket.setup(ios);
   }
 }
 

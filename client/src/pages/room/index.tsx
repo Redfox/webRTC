@@ -12,8 +12,8 @@ const Room: React.FC = () => {
   const userVideo = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    connect();
-  }, [connect]);
+    connect(roomName);
+  }, [connect, roomName]);
 
   useEffect(() => {
     if(stream && userVideo.current) {

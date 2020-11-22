@@ -1,5 +1,5 @@
 export interface SocketContextData {
-  connect: () => void;
+  connect: (roomName: string) => void;
   stream: MediaStream | null;
   mediaAvailable: {
     video: boolean;

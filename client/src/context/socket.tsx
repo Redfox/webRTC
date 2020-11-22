@@ -7,8 +7,9 @@ const SocketContext = createContext<SocketContextData>({} as SocketContextData)
 export const SocketProvider: React.FC = ({ children }) => {
   const [mediaAvailable, setMediaAvailable] = useState({ video: true, audio: true });
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
 
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (roomName: string) => {
     // TODO: improve logic
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -39,8 +40,10 @@ export const SocketProvider: React.FC = ({ children }) => {
       }
     }
 
-    const socket = io(process.env.REACT_APP_WS as string);
-    
+    const skt = io(process.env.REACT_APP_WS as string, { secure: true });
+    setSocket(skt);
+
+    skt.emit('ready', roomName)
   }, []);
 
   return (
