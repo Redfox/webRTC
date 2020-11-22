@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
-import { MdMic, MdMicOff } from 'react-icons/md';
-import { BiCamera, BiCameraOff } from 'react-icons/bi';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Container, Bar, VideoContainer, Controls, Icon } from './styles';
+import { Container, Bar, VideoContainer } from './styles';
+
+import Controls from 'components/Controls';
 
 const Room: React.FC = () => {
-  const lsMicMuted = localStorage.getItem('@videoChat/micMuted');
-  const lsVideoMuted = localStorage.getItem('@videoChat/VideoMuted');
-  const [micMuted, setMicMuted] = useState(lsMicMuted ? Boolean(localStorage.getItem('@videoChat/micMuted')) : false);
-  const [videoMuted, setVideoMuted] = useState(lsVideoMuted ? Boolean(localStorage.getItem('@videoChat/VideoMuted')) : false);
   const { roomName } = useParams<{ roomName: string }>();
 
   return (
@@ -24,14 +20,7 @@ const Room: React.FC = () => {
         </video>
       </VideoContainer>
 
-      <Controls>
-        <Icon>
-          {micMuted ? <MdMicOff size={25} /> : <MdMic size={25} />}
-        </Icon>
-        <Icon>
-          {videoMuted ? <BiCameraOff size={25} /> : <BiCamera size={25} />}
-        </Icon>
-      </Controls>
+      <Controls />
     </Container>
   )
 }
