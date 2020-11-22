@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { Container, Bar, VideoContainer } from './styles';
@@ -7,12 +7,19 @@ import { useSocket } from 'context/socket';
 import Controls from 'components/Controls';
 
 const Room: React.FC = () => {
-  const { connect } = useSocket();
+  const { connect, stream, mediaAvailable } = useSocket();
   const { roomName } = useParams<{ roomName: string }>();
+  const userVideo = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     connect();
   }, [connect]);
+
+  useEffect(() => {
+    if(stream && userVideo.current) {
+      userVideo.current.srcObject = stream;
+    }
+  }, [stream])
 
   return (
     <Container>
@@ -21,9 +28,17 @@ const Room: React.FC = () => {
       </Bar>
 
       <VideoContainer>
-        <video controls autoPlay>
-          <source src="/home/vitor/Downloads/videoplayback.mp4" type="video/mp4" />
-        </video>
+        {mediaAvailable.video ? (
+          <video 
+            playsInline 
+            muted 
+            ref={userVideo} 
+            autoPlay 
+            />
+        ): (
+          <h1>Thumb video</h1>
+        )}
+      
       </VideoContainer>
 
       <Controls />
