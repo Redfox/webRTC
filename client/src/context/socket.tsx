@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useCallback, useState } from 'react';
+import React, { createContext, useContext, useCallback, useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { SocketContextData } from './models/socket';
+import { AnswerEventHandler, CandidateEventHandler, JoinEventHandler, LeaveEventHandler, OfferEventHandler } from './socket.events';
 
 const SocketContext = createContext<SocketContextData>({} as SocketContextData)
 
@@ -45,6 +46,20 @@ export const SocketProvider: React.FC = ({ children }) => {
 
     skt.emit('ready', roomName)
   }, []);
+
+  useEffect(() => {
+    if(stream && socket) {
+      socket.on('join', (socketId: string) => JoinEventHandler(socketId, stream, socket));
+    
+      socket.on('offer', (socketId: string, data: RTCSessionDescription) => OfferEventHandler(socketId, data, stream, socket));
+      
+      socket.on('answer', (socketId: string, data: RTCSessionDescription) => AnswerEventHandler(socketId, data))
+    
+      socket.on('candidate', (socketId: string, data: RTCIceCandidate) => CandidateEventHandler(socketId, data))
+    
+      socket.on('leave', (socketId: string) => LeaveEventHandler(socketId, socket));
+    }
+  }, [socket, stream]);
 
   return (
     <SocketContext.Provider value={{ connect, stream, mediaAvailable }}>

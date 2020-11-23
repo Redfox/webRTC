@@ -27,7 +27,7 @@ const Room: React.FC = () => {
         <h1>Room - {roomName}</h1>
       </Bar>
 
-      <VideoContainer>
+      <VideoContainer id="videos">
         {mediaAvailable.video ? (
           <video 
             playsInline 

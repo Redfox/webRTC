@@ -10,8 +10,7 @@ class Socket {
 
   public setup(io: Server): void {
     io.on('connection', (socket: ISocket) => {
-      socket.on('ready', (roomId: string) => {
-        room.initRoom(roomId, socket.id);
+      socket.on('ready', (roomId: string) => {        room.initRoom(roomId, socket.id);
         socket.roomId = roomId;
         socket.join(roomId);
 
@@ -24,8 +23,34 @@ class Socket {
             }, index * Number(process.env.DELAY))
           }
         }); 
-      })
-    })
+      });
+
+      socket.on('offer', (id, data) => {
+        socket.to(id).emit('offer', socket.id, data);
+      });
+
+      socket.on('candidate', (id, data) => {
+        socket.to(id).emit('candidate', socket.id, data);
+      });
+
+      socket.on('answer', (id, data) => {
+        socket.to(id).emit('answer', socket.id, data);
+      });
+
+      socket.on('leave', () => {
+        room.updateRooms(socket.roomId, socket.id);
+        io.emit('leave', socket.id);
+        socket.leave(socket.roomId);
+      });
+
+      socket.on('disconnect', () => {
+        if(socket.roomId) {
+          room.updateRooms(socket.roomId, socket.id);
+          io.emit('leave', socket.id);
+          socket.leave(socket.roomId);
+        }
+      });
+    });
   }
 }
 
