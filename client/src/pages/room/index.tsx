@@ -36,7 +36,9 @@ const Room: React.FC = () => {
             autoPlay 
             />
         ): (
-          <h1>Thumb video</h1>
+          <div className="thumb">
+            <h1>(no cam) - Thumb</h1>
+          </div>
         )}
       
       </VideoContainer>

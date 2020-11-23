@@ -111,7 +111,10 @@ export async function LeaveEventHandler(socketId: string, socket: SocketIOClient
 
 
 function addVideo(e: RTCTrackEvent, remoteId: string) {
-  if(document.getElementById(remoteId)) return;
+  if(document.getElementById(`wrp-${remoteId}`)) return;
+
+  const div = document.createElement('div');
+  div.setAttribute('id', `wrp-${remoteId}`)
 
   const remoteVideo = document.createElement('video');
   remoteVideo.setAttribute('id', remoteId);
@@ -120,7 +123,9 @@ function addVideo(e: RTCTrackEvent, remoteId: string) {
   remoteVideo.setAttribute('playsinline', 'true');
   remoteVideo.play();
 
-  document.getElementById('videos')?.appendChild(remoteVideo);
+  div.appendChild(remoteVideo);
+
+  document.getElementById('videos')?.appendChild(div);
 }
 
 function removeVideo(remoteId: string) {
@@ -128,7 +133,5 @@ function removeVideo(remoteId: string) {
 
   delete peerConnections[remoteId];
 
-  if(document.getElementById(remoteId)) {
-    document.getElementById(remoteId)?.remove();
-  }
+  document.getElementById(`wrp-${remoteId}`)?.remove();
 }
