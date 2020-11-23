@@ -11,7 +11,7 @@ export const SocketProvider: React.FC = ({ children }) => {
   const [socket, setSocket] = useState<SocketIOClient.Socket | null>(null);
 
   const connect = useCallback(async (roomName: string) => {
-    // TODO: improve logic
+    // TODO: improve the logic
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,

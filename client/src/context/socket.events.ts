@@ -22,15 +22,21 @@ export async function JoinEventHandler(socketId: string, stream: MediaStream, so
   const peerConnection = new RTCPeerConnection(IceServers);
   peerConnections[socketId] = peerConnection;
 
-  stream.getTracks().forEach((track) => peerConnection.addTrack(track, stream));
+  stream.getTracks().forEach((track) => {
+    
+    peerConnection.addTrack(track, stream)
+  });
 
   try {
-    const sdp = await peerConnection.createOffer()
+    const sdp = await peerConnection.createOffer({
+      offerToReceiveAudio: true,
+      offerToReceiveVideo: true
+    });
     await peerConnection.setLocalDescription(new RTCSessionDescription(sdp));
     socket.emit('offer', socketId, peerConnection.localDescription);
 
     peerConnection.ontrack = (e) => {
-      console.log(`${socketId} ontrack`);
+      console.log(`${socketId} ontrack join`);
       addVideo(e, socketId);
     }
   
@@ -52,10 +58,7 @@ export async function OfferEventHandler(socketId: string, data: RTCSessionDescri
   const peerConnection = new RTCPeerConnection(IceServers);
   peerConnections[socketId] = peerConnection;
 
-  stream.getTracks().forEach((track) => {
-    console.log('track', track);
-    peerConnection.addTrack(track, stream)
-  });
+  stream.getTracks().forEach((track) => peerConnection.addTrack(track, stream));
 
   try {
     await peerConnection.setRemoteDescription(data);
@@ -65,7 +68,7 @@ export async function OfferEventHandler(socketId: string, data: RTCSessionDescri
     socket.emit('answer', socketId, peerConnection.localDescription);
 
     peerConnection.ontrack = (e) => {
-      console.log(`${socketId} ontrack`);
+      console.log(`${socketId} ontrack offer`);   
       addVideo(e, socketId);
     }
   
@@ -109,8 +112,6 @@ export async function LeaveEventHandler(socketId: string, socket: SocketIOClient
 
 function addVideo(e: RTCTrackEvent, remoteId: string) {
   if(document.getElementById(remoteId)) return;
-  
-  console.log(e.streams)
 
   const remoteVideo = document.createElement('video');
   remoteVideo.setAttribute('id', remoteId);
